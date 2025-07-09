@@ -1,5 +1,5 @@
 function handleClick() {
-  alert("¡Hiciste clic en el botón de temporizador!");
+  alert("You clicked the timer button!");
 }
 
 function attachClickListener() {
@@ -10,11 +10,11 @@ function attachClickListener() {
   }
 }
 
-// Observa cambios en el DOM por si el botón aparece después (SPA)
+// Observe DOM changes in case the button appears later (SPA)
 const observer = new MutationObserver(() => {
   attachClickListener();
 });
 observer.observe(document.body, { childList: true, subtree: true });
 
-// Intento inicial
+// Initial attempt
 attachClickListener();
