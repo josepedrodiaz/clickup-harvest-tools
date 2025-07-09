@@ -3,7 +3,7 @@
   "name": "ClickUp & Harvest Tools",
   "version": "1.0",
   "description": "Adds tools to the Harvest integration in ClickUp",
-  "permissions": ["scripting"],
+  "permissions": ["activeTab", "scripting"],
   "content_scripts": [
     {
       "matches": ["https://app.clickup.com/*"],
