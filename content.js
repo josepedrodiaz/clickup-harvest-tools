@@ -33,39 +33,16 @@ function handleHarvestDialog() {
 
 // Function to attach listener to Harvest dialog
 function attachDialogListener() {
-  // Try multiple selectors for the Harvest dialog
-  const dialogSelectors = [
-    'dialog.harvest-dialog',
-    'dialog[class*="harvest"]',
-    'div[class*="harvest"]',
-    'div[class*="dialog"]',
-    'iframe[id*="harvest"]',
-    'iframe[src*="harvest"]'
-  ];
+  // Look for Harvest dialog
+  const harvestDialog = document.querySelector('dialog.harvest-dialog, dialog[class*="harvest"]');
   
-  let harvestDialog = null;
-  let harvestIframe = null;
-  
-  for (const selector of dialogSelectors) {
-    const element = document.querySelector(selector);
-    if (element) {
-      if (element.tagName === 'DIALOG' || element.classList.contains('dialog')) {
-        harvestDialog = element;
-      } else if (element.tagName === 'IFRAME') {
-        harvestIframe = element;
-      }
-    }
-  }
-  
-  if (harvestDialog || harvestIframe) {
-    if (harvestDialog && !harvestDialog.hasAttribute('data-listener-attached')) {
-      harvestDialog.setAttribute('data-listener-attached', 'true');
-      
-      // Add a small delay to ensure the dialog is fully loaded
-      setTimeout(() => {
-        handleHarvestDialog();
-      }, 500);
-    }
+  if (harvestDialog && !harvestDialog.hasAttribute('data-listener-attached')) {
+    harvestDialog.setAttribute('data-listener-attached', 'true');
+    
+    // Add a small delay to ensure the dialog is fully loaded
+    setTimeout(() => {
+      handleHarvestDialog();
+    }, 500);
   }
 }
 
@@ -75,17 +52,14 @@ const observer = new MutationObserver((mutations) => {
     if (mutation.type === 'childList') {
       mutation.addedNodes.forEach((node) => {
         if (node.nodeType === Node.ELEMENT_NODE) {
-          // Check if the added node is a Harvest dialog or iframe
+          // Check if the added node is a Harvest dialog
           if (node.tagName === 'DIALOG' && (node.classList.contains('harvest-dialog') || node.className.includes('harvest'))) {
             setTimeout(() => attachDialogListener(), 100);
-          } else if (node.tagName === 'IFRAME' && (node.src.includes('harvest') || node.id.includes('harvest'))) {
-            setTimeout(() => attachDialogListener(), 100);
           } else if (node.querySelector) {
-            // Check if the added node contains Harvest elements
+            // Check if the added node contains Harvest dialog
             const harvestDialog = node.querySelector('dialog.harvest-dialog, dialog[class*="harvest"]');
-            const harvestIframe = node.querySelector('iframe[src*="harvest"], iframe[id*="harvest"]');
             
-            if (harvestDialog || harvestIframe) {
+            if (harvestDialog) {
               setTimeout(() => attachDialogListener(), 100);
             }
           }
@@ -99,20 +73,3 @@ observer.observe(document.body, { childList: true, subtree: true });
 
 // Initial attempt
 attachDialogListener();
-
-// Periodic check for Harvest dialog (in case it loads after initial check)
-let checkCount = 0;
-const maxChecks = 10;
-const checkInterval = setInterval(() => {
-  checkCount++;
-  
-  const harvestDialog = document.querySelector('dialog.harvest-dialog, dialog[class*="harvest"]');
-  const harvestIframe = document.querySelector('iframe[src*="harvest"], iframe[id*="harvest"]');
-  
-  if (harvestDialog || harvestIframe) {
-    attachDialogListener();
-    clearInterval(checkInterval);
-  } else if (checkCount >= maxChecks) {
-    clearInterval(checkInterval);
-  }
-}, 1000);
