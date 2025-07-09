@@ -1,0 +1,14 @@
+{
+  "manifest_version": 3,
+  "name": "ClickUp T& Harvest Tools",
+  "version": "1.0",
+  "description": "Agrega herramientas a la integracion de Harvest en Clickup",
+  "permissions": ["scripting"],
+  "content_scripts": [
+    {
+      "matches": ["https://app.clickup.com/*"],
+      "js": ["content.js"],
+      "run_at": "document_idle"
+    }
+  ]
+}
